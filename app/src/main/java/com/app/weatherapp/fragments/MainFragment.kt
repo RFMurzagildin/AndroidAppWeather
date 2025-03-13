@@ -41,7 +41,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         checkPermission()
         initAdapter()
         updateCurrentCard()
-        requestWeatherData("Tolbazy")
+        requestWeatherData("Barcelona")
     }
 
     private fun initAdapter(){
@@ -59,9 +59,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             binding?.run {
                 tvData.text = item.time
                 textCity.text = item.city
-                tvCurrentTemp.text = "${item.currentTemp}°С"
+                if(item.currentTemp.isEmpty()){
+                    tvCurrentTemp.text = "${item.maxTemp}°/${item.minTemp}°"
+                }else{
+                    tvCurrentTemp.text = "${item.currentTemp}°"
+                }
                 tvCondition.text = item.condition
-                tvMaxMinTemp.text = "${item.maxTemp}°С/${item.minTemp}°С"
+                tvMaxMinTemp.text = if(item.currentTemp.isEmpty()) "" else "${item.maxTemp}°/${item.minTemp}°"
                 Picasso.get().load("https:" + item.imageUrl).into(imWeather)
             }
         }
@@ -101,12 +105,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 condition = day.getJSONObject("day").getJSONObject("condition").getString("text"),
                 imageUrl = day.getJSONObject("day").getJSONObject("condition").getString("icon"),
                 currentTemp = "",
-                maxTemp = day.getJSONObject("day").getString("maxtemp_c"),
-                minTemp = day.getJSONObject("day").getString("mintemp_c"),
+                maxTemp = day.getJSONObject("day").getString("maxtemp_c").toFloat().toInt().toString(),
+                minTemp = day.getJSONObject("day").getString("mintemp_c").toFloat().toInt().toString(),
                 hours = day.getJSONArray("hour").toString(),
             )
             list.add(item)
         }
+        model.liveDataList.value = list
         return list
     }
 
@@ -122,13 +127,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             hours = weatherItem.hours,
         )
         model.liveDataCurrent.value = item
-//        Log.d("WeatherLog", "City: ${item.city}")
-//        Log.d("WeatherLog", "Time: ${item.time}")
-//        Log.d("WeatherLog", "Condition: ${item.condition}")
-//        Log.d("WeatherLog", "Temp: ${item.currentTemp}")
-//        Log.d("WeatherLog", "Url: ${item.imageUrl}")
-//        Log.d("WeatherLog", "MaxTemp: ${item.maxTemp}")
-//        Log.d("WeatherLog", "MinTemp: ${item.minTemp}")
     }
 
 

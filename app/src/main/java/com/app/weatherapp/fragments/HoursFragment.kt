@@ -33,7 +33,7 @@ class HoursFragment : Fragment(R.layout.fragment_hours) {
     }
 
     private fun initRecycleView(){
-        adapter = WeatherAdapter()
+        adapter = WeatherAdapter(null)
         binding?.run {
             rcView.layoutManager = LinearLayoutManager(activity)
             rcView.adapter = adapter
