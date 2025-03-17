@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.CitiesFragment">
 
     <ImageView
@@ -27,9 +27,9 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
+        android:backgroundTint="@color/card_yellow_bg"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
-        android:backgroundTint="@color/card_yellow_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -39,12 +39,12 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btnAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
-                android:text="Добавить"
                 android:layout_marginStart="16dp"
                 android:backgroundTint="@color/card_yellow_bg"
+                android:text="Добавить"
                 app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
                 app:layout_constraintStart_toEndOf="@+id/textInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
@@ -63,11 +63,11 @@
                 android:id="@+id/ivBack"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:src="@drawable/baseline_arrow_back_ios_new_24"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"  />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvFavourite"
@@ -87,9 +87,9 @@
                 android:layout_width="212dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
                 android:hint="Город или регион"
                 android:textColorHint="@color/white"
 
@@ -109,6 +109,97 @@
 
 
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvCurrentCity"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:backgroundTint="@color/card_yellow_bg"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="@id/cvFavourite"
+        app:layout_constraintStart_toStartOf="@id/cvFavourite"
+        app:layout_constraintTop_toBottomOf="@id/cvFavourite">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivCurrentCondition"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_launcher_foreground"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCurrentTemp"
+                app:layout_constraintStart_toEndOf="@+id/tvCurrentTemp"
+                app:layout_constraintTop_toTopOf="@+id/tvCurrentTemp" />
+
+            <TextView
+                android:id="@+id/tvCurrentTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+5°C"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCurrentCity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCurrentCity"
+                app:layout_constraintTop_toTopOf="@+id/tvCurrentCity" />
+
+            <TextView
+                android:id="@+id/tvTitleCurrentCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:text="Текущее место"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCurrentCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Мадрид"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitleCurrentCity"
+                app:layout_constraintVertical_bias="0.4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvFavouriteTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cvCurrentCity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rcView"
+        android:text="Добавленные"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:layout_marginVertical="10dp"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:listitem="@layout/city_item"
+        tools:itemCount="2"
+        app:layout_constraintTop_toBottomOf="@id/tvFavouriteTitle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 

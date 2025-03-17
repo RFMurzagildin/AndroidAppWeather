@@ -7,8 +7,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.weatherapp.MainViewModel
 import com.app.weatherapp.R
-import com.app.weatherapp.adapters.WeatherAdapter
-import com.app.weatherapp.adapters.WeatherModel
+import com.app.weatherapp.adapters.daysAndHoursAdapter.WeatherAdapter
+import com.app.weatherapp.models.WeatherModel
 import com.app.weatherapp.databinding.FragmentHoursBinding
 import org.json.JSONArray
 import org.json.JSONObject

@@ -22,8 +22,8 @@ import com.android.volley.toolbox.Volley
 import com.app.weatherapp.DialogManager
 import com.app.weatherapp.MainViewModel
 import com.app.weatherapp.R
-import com.app.weatherapp.adapters.VPAdapter
-import com.app.weatherapp.adapters.WeatherModel
+import com.app.weatherapp.adapters.viewPagerAdapter.VPAdapter
+import com.app.weatherapp.models.WeatherModel
 import com.app.weatherapp.databinding.FragmentMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -50,6 +50,7 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMainBinding.bind(view)
+        loading(true)
         checkPermission()
         fLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         initAdapter()
@@ -202,7 +203,6 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
                     .toString(),
                 hours = day.getJSONArray("hour").toString(),
             )
-            println(name)
             list.add(item)
         }
         model.liveDataList.value = list
@@ -227,6 +227,7 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
             hours = weatherItem.hours,
         )
         model.liveDataCurrent.value = item
+        loading(false)
     }
 
 
@@ -243,6 +244,25 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
             permissionListener()
             pLauncher?.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    private fun loading(progress: Boolean){
+        if (progress){
+            binding?.run {
+                tabLayout.visibility = View.GONE
+                currentWeatherZone.visibility = View.GONE
+                vp.visibility = View.GONE
+                progressBar.visibility = View.VISIBLE
+            }
+        }else{
+            binding?.run {
+                tabLayout.visibility = View.VISIBLE
+                currentWeatherZone.visibility = View.VISIBLE
+                vp.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+            }
+        }
+
     }
 
     override fun onDestroy() {
