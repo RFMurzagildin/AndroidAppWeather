@@ -10,31 +10,33 @@ import com.app.weatherapp.R
 import com.app.weatherapp.databinding.ListItemBinding
 import com.squareup.picasso.Picasso
 
-class WeatherAdapter(val listener: Listener?) : ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
+class WeatherAdapter(val listener: Listener?) :
+    ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
 
-    class Holder(view: View, val listener: Listener?) : RecyclerView.ViewHolder(view){
+    class Holder(view: View, val listener: Listener?) : RecyclerView.ViewHolder(view) {
         val binding = ListItemBinding.bind(view)
         var itemTemp: WeatherModel? = null
+
         init {
             itemView.setOnClickListener {
                 itemTemp?.let { it1 -> listener?.onClick(it1) }
             }
         }
 
-        fun bind(item: WeatherModel) = with(binding){
+        fun bind(item: WeatherModel) = with(binding) {
             itemTemp = item
             tvDate.text = item.time
             tvCondition.text = item.condition
-            if(item.currentTemp.isEmpty()){
+            if (item.currentTemp.isEmpty()) {
                 tvTemp.text = "${item.maxTemp}°/${item.minTemp}°"
-            }else{
-                tvTemp.text = "${item.currentTemp}°"
+            } else {
+                tvTemp.text = "${item.currentTemp.toFloat().toInt()}°"
             }
             Picasso.get().load("https:" + item.imageUrl).into(im)
         }
     }
 
-    class Comparator : DiffUtil.ItemCallback<WeatherModel>(){
+    class Comparator : DiffUtil.ItemCallback<WeatherModel>() {
         override fun areItemsTheSame(oldItem: WeatherModel, newItem: WeatherModel): Boolean {
             return oldItem == newItem
         }
@@ -54,7 +56,7 @@ class WeatherAdapter(val listener: Listener?) : ListAdapter<WeatherModel, Weathe
         holder.bind(getItem(position))
     }
 
-    interface Listener{
+    interface Listener {
         fun onClick(item: WeatherModel)
     }
 

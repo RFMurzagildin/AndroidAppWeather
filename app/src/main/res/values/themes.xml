@@ -11,9 +11,9 @@
         <item name="colorPrimaryVariant">#00FFFFFF</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="colorSecondary">@color/black</item>
-        <item name="colorSecondaryVariant">@color/black</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 

@@ -1,10 +1,8 @@
 package com.app.weatherapp.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.weatherapp.MainViewModel
@@ -23,12 +21,12 @@ class DaysFragment : Fragment(R.layout.fragment_days), WeatherAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentDaysBinding.bind(view)
         initRecycleView()
-        model.liveDataList.observe(viewLifecycleOwner){
+        model.liveDataList.observe(viewLifecycleOwner) {
             adapter?.submitList(it)
         }
     }
 
-    private fun initRecycleView(){
+    private fun initRecycleView() {
         adapter = WeatherAdapter(this@DaysFragment)
         binding?.run {
             rcView.layoutManager = LinearLayoutManager(activity)
