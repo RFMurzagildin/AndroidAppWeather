@@ -49,15 +49,6 @@
                 app:layout_constraintStart_toEndOf="@+id/textInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
 
-            <ImageView
-                android:id="@+id/ivDelete"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/baseline_delete_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/ivBack"
@@ -77,8 +68,8 @@
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@id/ivBack"
-                app:layout_constraintEnd_toStartOf="@id/ivDelete"
-                app:layout_constraintStart_toEndOf="@id/ivBack"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/ivBack" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -89,7 +80,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="20dp"
                 android:hint="Город или регион"
                 android:textColorHint="@color/white"
 
@@ -102,7 +93,7 @@
                     android:id="@+id/editText"
                     android:layout_width="212dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="text"/>
             </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -196,6 +187,7 @@
         android:layout_height="0dp"
         tools:listitem="@layout/city_item"
         tools:itemCount="2"
+        android:layout_marginBottom="12dp"
         app:layout_constraintTop_toBottomOf="@id/tvFavouriteTitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

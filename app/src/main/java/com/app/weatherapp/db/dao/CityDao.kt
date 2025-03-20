@@ -14,6 +14,9 @@ interface CityDao {
     @Query("SELECT * FROM cities WHERE id = :id")
     suspend fun get(id: String): MutableList<CitiesEntity>?
 
-    @Query("DELETE FROM cities WHERE id = :id")
-    suspend fun delete(id: String)
+    @Query("DELETE FROM cities WHERE cityName = :cityName")
+    suspend fun delete(cityName: String)
+
+    @Query("SELECT * FROM cities")
+    suspend fun getAllCities(): MutableList<CitiesEntity>
 }

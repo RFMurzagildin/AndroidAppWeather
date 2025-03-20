@@ -18,9 +18,16 @@ class CityRepository(private val cityDao: CityDao){
         }
     }
 
-    suspend fun delete(id: String){
+    suspend fun delete(cityName: String){
         withContext(Dispatchers.IO){
-            cityDao.delete(id)
+            cityDao.delete(cityName)
         }
     }
+
+    suspend fun getAllCities(): MutableList<CitiesEntity>?{
+        return withContext(Dispatchers.IO){
+            cityDao.getAllCities()
+        }
+    }
+
 }

@@ -33,7 +33,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
 
-const val API_KEY = "c77d7f3b70914b85ae8200056251502"
+const val API_KEY_WEATHER = "c77d7f3b70914b85ae8200056251502"
 
 class MainFragment() : Fragment(R.layout.fragment_main) {
 
@@ -163,7 +163,7 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
 
     private fun requestWeatherData(city: String) {
         val url =
-            "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=${3}&aqi=no&alerts=no"
+            "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY_WEATHER}&q=${city}&days=${3}&aqi=no&alerts=no"
         val queue = Volley.newRequestQueue(context)
         val stringRequest = StringRequest(
             Request.Method.GET,
