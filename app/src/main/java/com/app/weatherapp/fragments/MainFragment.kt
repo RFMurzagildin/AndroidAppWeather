@@ -23,8 +23,8 @@ import com.app.weatherapp.DialogManager
 import com.app.weatherapp.MainViewModel
 import com.app.weatherapp.R
 import com.app.weatherapp.adapters.viewPagerAdapter.VPAdapter
-import com.app.weatherapp.models.WeatherModel
 import com.app.weatherapp.databinding.FragmentMainBinding
+import com.app.weatherapp.models.WeatherModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -57,6 +57,7 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
         updateCurrentCard()
         binding?.run {
             ivUpdate.setOnClickListener {
+                loading(true)
                 tabLayout.selectTab(tabLayout.getTabAt(0))
                 checkLocation()
             }
@@ -65,24 +66,24 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
                     .setCustomAnimations(
                         R.anim.slide_in_from_left,
                         R.anim.slide_out_to_right,
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left
                     )
                     .replace(R.id.fragment_container, CitiesFragment.newInstance())
-                    .addToBackStack(null)
+                    //.addToBackStack(null)
                     .commit()
             }
 
             ivSettings.setOnClickListener {
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(
-                        R.anim.slide_in_left,
-                        R.anim.slide_out_right,
-                        R.anim.slide_in_left,
-                        R.anim.slide_out_right
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left,
+                        R.anim.slide_in_from_left,
+                        R.anim.slide_out_to_right
                     )
                     .replace(R.id.fragment_container, SettingsFragment.newInstance())
-                    .addToBackStack(null)
+                    //.addToBackStack(null)
                     .commit()
             }
         }
@@ -204,6 +205,9 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
                 hours = day.getJSONArray("hour").toString(),
             )
             list.add(item)
+        }
+        for (weatherModel in list) {
+            println(weatherModel)
         }
         model.liveDataList.value = list
         return list

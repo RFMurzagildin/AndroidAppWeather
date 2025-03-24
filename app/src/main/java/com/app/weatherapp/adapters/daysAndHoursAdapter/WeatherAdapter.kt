@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.weatherapp.R
-import com.app.weatherapp.models.WeatherModel
 import com.app.weatherapp.databinding.ListItemBinding
+import com.app.weatherapp.models.WeatherModel
 import com.squareup.picasso.Picasso
 
 class WeatherAdapter(val listener: Listener?) :

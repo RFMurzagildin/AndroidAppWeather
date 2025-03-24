@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.weatherapp.MainViewModel
 import com.app.weatherapp.R
 import com.app.weatherapp.adapters.daysAndHoursAdapter.WeatherAdapter
-import com.app.weatherapp.models.WeatherModel
 import com.app.weatherapp.databinding.FragmentDaysBinding
+import com.app.weatherapp.models.WeatherModel
 
 class DaysFragment : Fragment(R.layout.fragment_days), WeatherAdapter.Listener {
 

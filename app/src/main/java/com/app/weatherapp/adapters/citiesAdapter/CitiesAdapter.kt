@@ -1,10 +1,10 @@
 package com.app.weatherapp.adapters.citiesAdapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.app.weatherapp.databinding.CityItemBinding
 import com.app.weatherapp.db.di.ServiceLocator
@@ -21,7 +21,7 @@ class CitiesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CitiesHolder {
         val binding = CityItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CitiesHolder(binding)
+        return CitiesHolder(binding, context)
     }
 
     override fun onBindViewHolder(holder: CitiesHolder, position: Int) {
@@ -57,5 +57,14 @@ class CitiesAdapter(
                 }
             }
         }
+    }
+
+    fun updateData(newCities: List<CitiesEntity>) {
+        val diffCallback = CityDiffCallback(cities, newCities.toMutableList())
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        cities.clear()
+        cities.addAll(newCities)
+        diffResult.dispatchUpdatesTo(this)
     }
 }

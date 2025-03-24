@@ -42,10 +42,10 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                 parentFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right,
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left,
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left
                     )
                     .replace(R.id.fragment_container, MainFragment.newInstance())
                     .commit()
@@ -54,10 +54,10 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                 parentFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right,
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left,
+                        R.anim.slide_in_from_right,
+                        R.anim.slide_out_to_left
                     )
                     .replace(R.id.fragment_container, MainFragment.newInstance())
                     .commit()
@@ -66,6 +66,13 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                 val cityName = editText.text.toString().trim()
                 if (cityName.isNotEmpty()) {
                     searchCity(cityName)
+                }else{
+                    Toast.makeText(
+                        requireContext(),
+                        "Поле не может быть пустым",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding?.textInputLayout?.error = "Поле не может быть пустым"
                 }
             }
 
@@ -75,7 +82,54 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
             val cities = cityRepository.getAllCities()
             setupRecycleView(cities)
         }
+//        getCitiesWeather()
     }
+
+//    private fun getCitiesWeather(): ArrayList<WeatherModel>{
+//        val list = ArrayList<WeatherModel>()
+//        lifecycleScope.launch {
+//            val cities = cityRepository.getAllCities()
+//            for(i in 0 until cities.size){
+//                val weatherModel = getCityWeather(cities[i].lat + "," + cities[i].lon)
+//                weatherModel?.let { list.add(it) }
+//            }
+//        }
+//        model.liveDataCitiesWeather.value = list
+//        return list
+//    }
+
+//    private fun getCityWeather(city: String): WeatherModel?{
+//        val url = "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY_WEATHER}&q=${city}&days=${3}&aqi=no&alerts=no"
+//        val queue = Volley.newRequestQueue(context)
+//        var weatherModel: WeatherModel? = null
+//        val stringRequest = StringRequest(
+//            Request.Method.GET,
+//            url,
+//            { response ->
+//                val mainObject = JSONObject(response)
+//                val incorrectName = mainObject.getJSONObject("location").getString("name")
+//                val name = String(incorrectName.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
+//                val currentTemp = mainObject.getJSONObject("current").getString("temp_c")
+//                val icon = mainObject.getJSONObject("current").getJSONObject("condition").getString("icon")
+//                weatherModel = WeatherModel(
+//                    city = name,
+//                    time = "",
+//                    condition = "",
+//                    imageUrl = icon,
+//                    currentTemp = currentTemp,
+//                    maxTemp = "",
+//                    minTemp = "",
+//                    hours = ""
+//                )
+//                return weatherModel
+//            },
+//            { error ->
+//                Log.d("WeatherLog", "Error $error")
+//            }
+//        )
+//        queue.add(stringRequest)
+//        return weatherModel
+//    }
 
     private fun updateCurrentCityCard() {
         model.liveDataCurrent.observe(viewLifecycleOwner) { item ->
@@ -85,23 +139,6 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                 Picasso.get().load("https:" + item.imageUrl).into(ivCurrentCondition)
             }
         }
-    }
-
-    private fun getWeatherByCity(city: String) {
-        val url =
-            "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY_WEATHER}&q=${city}&days=${3}&aqi=no&alerts=no"
-        val queue = Volley.newRequestQueue(context)
-        val stringRequest = StringRequest(
-            Request.Method.GET,
-            url,
-            { response ->
-                Log.d("WeatherLog", "Response: $response")
-            },
-            { error ->
-                Log.d("WeatherLog", "Error: $error")
-            }
-        )
-        queue.add(stringRequest)
     }
 
     private fun searchCity(city: String) {
@@ -121,42 +158,47 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                     val lon: String
                     val country: String
                     val state: String
-                    if(checkKeyInJSON(mainObject, "name")){
+                    if (checkKeyInJSON(mainObject, "name")) {
                         cityName = mainObject.getString("name")
-                    }else{
+                    } else {
                         cityName = "неизвестно"
                     }
-                    if(checkKeyInJSON(mainObject, "lat")){
+                    if (checkKeyInJSON(mainObject, "lat")) {
                         lat = mainObject.getString("lat")
-                    }else{
+                    } else {
                         lat = "неизвестно"
                     }
-                    if(checkKeyInJSON(mainObject, "lon")){
+                    if (checkKeyInJSON(mainObject, "lon")) {
                         lon = mainObject.getString("lon")
-                    }else{
+                    } else {
                         lon = "неизвестно"
                     }
-                    if(checkKeyInJSON(mainObject, "country")){
+                    if (checkKeyInJSON(mainObject, "country")) {
                         country = mainObject.getString("country")
-                    }else{
+                    } else {
                         country = "неизвестно"
                     }
-                    if(checkKeyInJSON(mainObject, "state")){
+                    if (checkKeyInJSON(mainObject, "state")) {
                         state = mainObject.getString("state")
-                    }else{
+                    } else {
                         state = "неизвестно"
                     }
                     lifecycleScope.launch {
-                        var citiesFromDatabase = cityRepository.getAllCities()
-                        for (i in 0 until citiesFromDatabase!!.size) {
+                        val citiesFromDatabase = cityRepository.getAllCities()
+                        for (i in 0 until citiesFromDatabase.size) {
                             if (citiesFromDatabase[i].lat == lat && citiesFromDatabase[i].lon == lon) {
-                                binding?.textInputLayout?.error = "Данный город уже добавлен в список"
-                                Toast.makeText(requireContext(), "Данный город уже добавлен в список", Toast.LENGTH_SHORT).show()
+                                binding?.textInputLayout?.error =
+                                    "Данный город уже добавлен в список"
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Данный город уже добавлен в список",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 Log.e("WeatherLog", "Данный город уже добавлен в список")
                                 return@launch
                             }
                         }
-                        var newCity = CitiesEntity(
+                        val newCity = CitiesEntity(
                             UUID.randomUUID().toString(),
                             cityName,
                             lat,
@@ -165,11 +207,17 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                             state
                         )
                         cityRepository.insert(newCity)
-                        Toast.makeText(requireContext(), "Город добавлен", Toast.LENGTH_SHORT).show()
+                        cityAdapter?.updateData(cityRepository.getAllCities())
+                        Toast.makeText(requireContext(), "Город добавлен", Toast.LENGTH_SHORT)
+                            .show()
                         binding?.editText?.setText("")
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Неправильно введено название города", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Неправильно введено название города",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     binding?.textInputLayout?.error = "Неправильно введено название города"
                     Log.e("WeatherLog", "Неправильно введено название города")
                 }
@@ -194,14 +242,22 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
         }
     }
 
-    private fun checkKeyInJSON(jsonObject: JSONObject, keyToCheck: String): Boolean{
-        try{
+    private fun checkKeyInJSON(jsonObject: JSONObject, keyToCheck: String): Boolean {
+        try {
 
             return jsonObject.has(keyToCheck)
-        }catch(e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Log.e("WeatherLog", "Ошибка при разборе JSON: ${e.message}")
             return false
+        }
+    }
+
+    private fun loading(visible: Boolean){
+        if(visible){
+            binding?.run {
+
+            }
         }
     }
 
