@@ -23,7 +23,7 @@ class HoursFragment : Fragment(R.layout.fragment_hours) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHoursBinding.bind(view)
         initRecycleView()
-        model.liveDataCurrent.observe(viewLifecycleOwner) {
+        model.liveDataCurrentSelection.observe(viewLifecycleOwner) {
             adapter?.submitList(getHoursList(it))
         }
     }
@@ -42,6 +42,7 @@ class HoursFragment : Fragment(R.layout.fragment_hours) {
         val list = ArrayList<WeatherModel>()
         for (i in 0 until hoursArray.length()) {
             val item = WeatherModel(
+                current = true,
                 city = wm.city,
                 time = (hoursArray[i] as JSONObject).getString("time"),
                 condition = (hoursArray[i] as JSONObject).getJSONObject("condition")

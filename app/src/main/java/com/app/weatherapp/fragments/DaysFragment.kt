@@ -40,7 +40,7 @@ class DaysFragment : Fragment(R.layout.fragment_days), WeatherAdapter.Listener {
     }
 
     override fun onClick(item: WeatherModel) {
-        model.liveDataCurrent.value = item
+        model.liveDataCurrentSelection.value = item
     }
 
     override fun onDestroy() {

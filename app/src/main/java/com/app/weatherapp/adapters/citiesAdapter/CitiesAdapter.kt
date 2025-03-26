@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.weatherapp.databinding.CityItemBinding
 import com.app.weatherapp.db.di.ServiceLocator
 import com.app.weatherapp.db.entities.CitiesEntity
+import com.app.weatherapp.models.WeatherModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -16,12 +17,13 @@ import kotlinx.coroutines.withContext
 
 class CitiesAdapter(
     private var cities: MutableList<CitiesEntity>,
-    private var context: Context
+    private var context: Context,
+    private var listener: Listener
 ) : RecyclerView.Adapter<CitiesHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CitiesHolder {
         val binding = CityItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CitiesHolder(binding, context)
+        return CitiesHolder(binding, context, listener)
     }
 
     override fun onBindViewHolder(holder: CitiesHolder, position: Int) {
@@ -66,5 +68,9 @@ class CitiesAdapter(
         cities.clear()
         cities.addAll(newCities)
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    interface Listener {
+        fun onClick(cityName: String)
     }
 }

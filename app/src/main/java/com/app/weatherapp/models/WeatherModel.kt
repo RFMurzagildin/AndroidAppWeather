@@ -1,6 +1,7 @@
 package com.app.weatherapp.models
 
 data class WeatherModel(
+    val current: Boolean,
     val city: String,
     val time: String,
     val condition: String,

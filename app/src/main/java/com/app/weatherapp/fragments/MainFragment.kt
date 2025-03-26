@@ -69,8 +69,9 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
                         R.anim.slide_in_from_right,
                         R.anim.slide_out_to_left
                     )
-                    .replace(R.id.fragment_container, CitiesFragment.newInstance())
-                    //.addToBackStack(null)
+                    .add(R.id.fragment_container, CitiesFragment.newInstance())
+                    .hide(this@MainFragment)
+                    .addToBackStack(null)
                     .commit()
             }
 
@@ -82,8 +83,9 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
                         R.anim.slide_in_from_left,
                         R.anim.slide_out_to_right
                     )
-                    .replace(R.id.fragment_container, SettingsFragment.newInstance())
-                    //.addToBackStack(null)
+                    .add(R.id.fragment_container, SettingsFragment.newInstance())
+                    .hide(this@MainFragment)
+                    .addToBackStack(null)
                     .commit()
             }
         }
@@ -145,19 +147,43 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
     }
 
     private fun updateCurrentCard() {
-        model.liveDataCurrent.observe(viewLifecycleOwner) { item ->
+        model.liveDataCurrentSelection.observe(viewLifecycleOwner) { item ->
             binding?.run {
                 tvData.text = item.time
                 textCity.text = item.city
-                if (item.currentTemp.isEmpty()) {
-                    tvCurrentTemp.text = "${item.maxTemp}°/${item.minTemp}°"
-                } else {
-                    tvCurrentTemp.text = "${item.currentTemp}°"
-                }
                 tvCondition.text = item.condition
-                tvMaxMinTemp.text =
-                    if (item.currentTemp.isEmpty()) "" else "${item.maxTemp}°/${item.minTemp}°"
                 Picasso.get().load("https:" + item.imageUrl).into(imWeather)
+                val parseMaxTemp = item.maxTemp.toFloat().toInt()
+                val parseMinTemp = item.minTemp.toFloat().toInt()
+                if (!item.current) {
+                    if(parseMaxTemp > 0 && parseMinTemp > 0){
+                        tvCurrentTemp.text = "+${item.maxTemp}°/+${item.minTemp}°"
+                    }else if(parseMaxTemp > 0 && parseMinTemp <= 0){
+                        tvCurrentTemp.text = "+${item.maxTemp}°/${item.minTemp}°"
+                    }else if(parseMaxTemp <= 0 && parseMinTemp > 0){
+                        tvCurrentTemp.text = "${item.maxTemp}°/+${item.minTemp}°"
+                    }else{
+                        tvCurrentTemp.text = "${item.maxTemp}°/${item.minTemp}°"
+                    }
+                    tvMaxMinTemp.text = ""
+                } else {
+                    val parseCurrentTemp = item.currentTemp.toFloat().toInt()
+                    if (parseCurrentTemp <= 0) {
+                        tvCurrentTemp.text = "$parseCurrentTemp°"
+                    } else {
+                        tvCurrentTemp.text = "+$parseCurrentTemp°"
+                    }
+                    if(parseMaxTemp > 0 && parseMinTemp > 0){
+                        tvMaxMinTemp.text = "+${item.maxTemp}°/+${item.minTemp}°"
+                    }else if(parseMaxTemp > 0 && parseMinTemp <= 0){
+                        tvMaxMinTemp.text = "+${item.maxTemp}°/${item.minTemp}°"
+                    }else if(parseMaxTemp <= 0 && parseMinTemp > 0){
+                        tvMaxMinTemp.text = "${item.maxTemp}°/+${item.minTemp}°"
+                    }else{
+                        tvMaxMinTemp.text = "${item.maxTemp}°/${item.minTemp}°"
+                    }
+
+                }
             }
         }
     }
@@ -193,11 +219,13 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
         for (i in 0 until daysArray.length()) {
             val day = daysArray[i] as JSONObject
             val item = WeatherModel(
+                current = false,
                 city = name,
                 time = day.getString("date"),
                 condition = day.getJSONObject("day").getJSONObject("condition").getString("text"),
                 imageUrl = day.getJSONObject("day").getJSONObject("condition").getString("icon"),
-                currentTemp = "",
+                currentTemp = mainObject.getJSONObject("current").getString("temp_c").toFloat().toInt()
+                    .toString(),
                 maxTemp = day.getJSONObject("day").getString("maxtemp_c").toFloat().toInt()
                     .toString(),
                 minTemp = day.getJSONObject("day").getString("mintemp_c").toFloat().toInt()
@@ -215,6 +243,7 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
 
     private fun parseCurrentData(mainObject: JSONObject, weatherItem: WeatherModel) {
         val item = WeatherModel(
+            current = true,
             city = String(
                 mainObject.getJSONObject("location").getString("name")
                     .toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8
@@ -230,7 +259,8 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
             minTemp = weatherItem.minTemp,
             hours = weatherItem.hours,
         )
-        model.liveDataCurrent.value = item
+        model.liveDataCurrentSelection.value = item
+        model.liveDataCurrentCity.value = item
         loading(false)
     }
 
@@ -250,23 +280,20 @@ class MainFragment() : Fragment(R.layout.fragment_main) {
         }
     }
 
-    private fun loading(progress: Boolean){
-        if (progress){
-            binding?.run {
+    private fun loading(progress: Boolean) {
+        binding?.run {
+            if (progress) {
                 tabLayout.visibility = View.GONE
                 currentWeatherZone.visibility = View.GONE
                 vp.visibility = View.GONE
                 progressBar.visibility = View.VISIBLE
-            }
-        }else{
-            binding?.run {
+            } else {
                 tabLayout.visibility = View.VISIBLE
                 currentWeatherZone.visibility = View.VISIBLE
                 vp.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
             }
         }
-
     }
 
     override fun onDestroy() {

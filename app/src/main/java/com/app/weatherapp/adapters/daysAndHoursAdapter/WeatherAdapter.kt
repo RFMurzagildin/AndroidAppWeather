@@ -11,16 +11,17 @@ import com.app.weatherapp.databinding.ListItemBinding
 import com.app.weatherapp.models.WeatherModel
 import com.squareup.picasso.Picasso
 
-class WeatherAdapter(val listener: Listener?) :
-    ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
+class WeatherAdapter(
+    private val listener: Listener?
+) : ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
 
-    class Holder(view: View, val listener: Listener?) : RecyclerView.ViewHolder(view) {
-        val binding = ListItemBinding.bind(view)
-        var itemTemp: WeatherModel? = null
+    class Holder(view: View, private val listener: Listener?) : RecyclerView.ViewHolder(view) {
+        private val binding = ListItemBinding.bind(view)
+        private var itemTemp: WeatherModel? = null
 
         init {
             itemView.setOnClickListener {
-                itemTemp?.let { it1 -> listener?.onClick(it1) }
+                itemTemp?.let { listener?.onClick(it) }
             }
         }
 
@@ -28,10 +29,26 @@ class WeatherAdapter(val listener: Listener?) :
             itemTemp = item
             tvDate.text = item.time
             tvCondition.text = item.condition
-            if (item.currentTemp.isEmpty()) {
-                tvTemp.text = "${item.maxTemp}°/${item.minTemp}°"
+            if (!item.current) {
+                val parseMaxTemp = item.maxTemp.toFloat().toInt()
+                val parseMinTemp = item.minTemp.toFloat().toInt()
+                if(parseMaxTemp > 0 && parseMinTemp > 0){
+                    tvTemp.text = "+${item.maxTemp}°/+${item.minTemp}°"
+                }else if(parseMaxTemp > 0 && parseMinTemp <= 0){
+                    tvTemp.text = "+${item.maxTemp}°/${item.minTemp}°"
+                }else if(parseMaxTemp <= 0 && parseMinTemp > 0){
+                    tvTemp.text = "${item.maxTemp}°/+${item.minTemp}°"
+                }else{
+                    tvTemp.text = "${item.maxTemp}°/${item.minTemp}°"
+                }
+
             } else {
-                tvTemp.text = "${item.currentTemp.toFloat().toInt()}°"
+                val parseTemp = item.currentTemp.toFloat().toInt()
+                if (parseTemp <= 0) {
+                    tvTemp.text = "$parseTemp°"
+                } else {
+                    tvTemp.text = "+$parseTemp°"
+                }
             }
             Picasso.get().load("https:" + item.imageUrl).into(im)
         }
@@ -60,5 +77,4 @@ class WeatherAdapter(val listener: Listener?) :
     interface Listener {
         fun onClick(item: WeatherModel)
     }
-
 }

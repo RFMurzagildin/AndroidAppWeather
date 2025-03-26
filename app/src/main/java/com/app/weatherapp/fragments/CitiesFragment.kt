@@ -17,6 +17,7 @@ import com.app.weatherapp.adapters.citiesAdapter.CitiesAdapter
 import com.app.weatherapp.databinding.FragmentCitiesBinding
 import com.app.weatherapp.db.di.ServiceLocator
 import com.app.weatherapp.db.entities.CitiesEntity
+import com.app.weatherapp.models.WeatherModel
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -25,7 +26,7 @@ import java.util.UUID
 
 const val API_KEY_CITY = "25888f60af4ecb14b3ede9c79bd07d10"
 
-class CitiesFragment : Fragment(R.layout.fragment_cities) {
+class CitiesFragment : Fragment(R.layout.fragment_cities), CitiesAdapter.Listener {
 
     private var cityRepository = ServiceLocator.getCityRepository()
     private var binding: FragmentCitiesBinding? = null
@@ -39,34 +40,16 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
 
         binding?.run {
             cvCurrentCity.setOnClickListener {
-                parentFragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(
-                        R.anim.slide_in_from_right,
-                        R.anim.slide_out_to_left,
-                        R.anim.slide_in_from_right,
-                        R.anim.slide_out_to_left
-                    )
-                    .replace(R.id.fragment_container, MainFragment.newInstance())
-                    .commit()
+                parentFragmentManager.popBackStack()
             }
             ivBack.setOnClickListener {
-                parentFragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(
-                        R.anim.slide_in_from_right,
-                        R.anim.slide_out_to_left,
-                        R.anim.slide_in_from_right,
-                        R.anim.slide_out_to_left
-                    )
-                    .replace(R.id.fragment_container, MainFragment.newInstance())
-                    .commit()
+                parentFragmentManager.popBackStack()
             }
             btnAdd.setOnClickListener {
                 val cityName = editText.text.toString().trim()
                 if (cityName.isNotEmpty()) {
                     searchCity(cityName)
-                }else{
+                } else {
                     Toast.makeText(
                         requireContext(),
                         "Поле не может быть пустым",
@@ -82,60 +65,18 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
             val cities = cityRepository.getAllCities()
             setupRecycleView(cities)
         }
-//        getCitiesWeather()
     }
 
-//    private fun getCitiesWeather(): ArrayList<WeatherModel>{
-//        val list = ArrayList<WeatherModel>()
-//        lifecycleScope.launch {
-//            val cities = cityRepository.getAllCities()
-//            for(i in 0 until cities.size){
-//                val weatherModel = getCityWeather(cities[i].lat + "," + cities[i].lon)
-//                weatherModel?.let { list.add(it) }
-//            }
-//        }
-//        model.liveDataCitiesWeather.value = list
-//        return list
-//    }
-
-//    private fun getCityWeather(city: String): WeatherModel?{
-//        val url = "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY_WEATHER}&q=${city}&days=${3}&aqi=no&alerts=no"
-//        val queue = Volley.newRequestQueue(context)
-//        var weatherModel: WeatherModel? = null
-//        val stringRequest = StringRequest(
-//            Request.Method.GET,
-//            url,
-//            { response ->
-//                val mainObject = JSONObject(response)
-//                val incorrectName = mainObject.getJSONObject("location").getString("name")
-//                val name = String(incorrectName.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
-//                val currentTemp = mainObject.getJSONObject("current").getString("temp_c")
-//                val icon = mainObject.getJSONObject("current").getJSONObject("condition").getString("icon")
-//                weatherModel = WeatherModel(
-//                    city = name,
-//                    time = "",
-//                    condition = "",
-//                    imageUrl = icon,
-//                    currentTemp = currentTemp,
-//                    maxTemp = "",
-//                    minTemp = "",
-//                    hours = ""
-//                )
-//                return weatherModel
-//            },
-//            { error ->
-//                Log.d("WeatherLog", "Error $error")
-//            }
-//        )
-//        queue.add(stringRequest)
-//        return weatherModel
-//    }
-
     private fun updateCurrentCityCard() {
-        model.liveDataCurrent.observe(viewLifecycleOwner) { item ->
+        model.liveDataCurrentCity.observe(viewLifecycleOwner) { item ->
             binding?.run {
+                val parseCurrentTemp = item.currentTemp.toFloat().toInt()
+                if (parseCurrentTemp <= 0) {
+                    tvCurrentTemp.text = "$parseCurrentTemp°"
+                } else {
+                    tvCurrentTemp.text = "+$parseCurrentTemp°"
+                }
                 tvCurrentCity.text = item.city
-                tvCurrentTemp.text = item.currentTemp
                 Picasso.get().load("https:" + item.imageUrl).into(ivCurrentCondition)
             }
         }
@@ -161,27 +102,27 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
                     if (checkKeyInJSON(mainObject, "name")) {
                         cityName = mainObject.getString("name")
                     } else {
-                        cityName = "неизвестно"
+                        cityName = "*Unknown*"
                     }
                     if (checkKeyInJSON(mainObject, "lat")) {
                         lat = mainObject.getString("lat")
                     } else {
-                        lat = "неизвестно"
+                        lat = "*Unknown*"
                     }
                     if (checkKeyInJSON(mainObject, "lon")) {
                         lon = mainObject.getString("lon")
                     } else {
-                        lon = "неизвестно"
+                        lon = "*Unknown*"
                     }
                     if (checkKeyInJSON(mainObject, "country")) {
                         country = mainObject.getString("country")
                     } else {
-                        country = "неизвестно"
+                        country = "*Unknown*"
                     }
                     if (checkKeyInJSON(mainObject, "state")) {
                         state = mainObject.getString("state")
                     } else {
-                        state = "неизвестно"
+                        state = "*Unknown*"
                     }
                     lifecycleScope.launch {
                         val citiesFromDatabase = cityRepository.getAllCities()
@@ -232,7 +173,7 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
 
     private fun setupRecycleView(cities: MutableList<CitiesEntity>?) {
         cityAdapter = cities?.let {
-            CitiesAdapter(it, requireContext())
+            CitiesAdapter(it, requireContext(), listener = this@CitiesFragment)
         }
         binding?.run {
             rcView.apply {
@@ -244,7 +185,6 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
 
     private fun checkKeyInJSON(jsonObject: JSONObject, keyToCheck: String): Boolean {
         try {
-
             return jsonObject.has(keyToCheck)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -253,12 +193,92 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
         }
     }
 
-    private fun loading(visible: Boolean){
-        if(visible){
+    private fun loading(visible: Boolean) {
+        if (visible) {
             binding?.run {
 
             }
         }
+    }
+
+    override fun onClick(cityName: String) {
+        requestWeatherData(cityName)
+        parentFragmentManager.popBackStack()
+    }
+
+    private fun requestWeatherData(city: String) {
+        val url =
+            "https://api.weatherapi.com/v1/forecast.json?key=${API_KEY_WEATHER}&q=${city}&days=${3}&aqi=no&alerts=no"
+        val queue = Volley.newRequestQueue(context)
+        val stringRequest = StringRequest(
+            Request.Method.GET,
+            url,
+            { response ->
+                parseWeatherData(response)
+            },
+            { error ->
+                Log.d("WeatherLog", "Error: $error")
+            }
+        )
+        queue.add(stringRequest)
+    }
+
+    private fun parseWeatherData(result: String) {
+        val mainObject = JSONObject(result)
+        val list = parseDays(mainObject)
+        parseCurrentData(mainObject, list[0])
+
+    }
+
+    private fun parseDays(mainObject: JSONObject): List<WeatherModel> {
+        val list = ArrayList<WeatherModel>()
+        val incorrectName = mainObject.getJSONObject("location").getString("name")
+        val name = String(incorrectName.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
+        val daysArray = mainObject.getJSONObject("forecast").getJSONArray("forecastday")
+        for (i in 0 until daysArray.length()) {
+            val day = daysArray[i] as JSONObject
+            val item = WeatherModel(
+                current = false,
+                city = name,
+                time = day.getString("date"),
+                condition = day.getJSONObject("day").getJSONObject("condition").getString("text"),
+                imageUrl = day.getJSONObject("day").getJSONObject("condition").getString("icon"),
+                currentTemp = "",
+                maxTemp = day.getJSONObject("day").getString("maxtemp_c").toFloat().toInt()
+                    .toString(),
+                minTemp = day.getJSONObject("day").getString("mintemp_c").toFloat().toInt()
+                    .toString(),
+                hours = day.getJSONArray("hour").toString(),
+            )
+            list.add(item)
+        }
+        for (weatherModel in list) {
+            println(weatherModel)
+        }
+        model.liveDataList.value = list
+        return list
+    }
+
+    private fun parseCurrentData(mainObject: JSONObject, weatherItem: WeatherModel) {
+        val item = WeatherModel(
+            current = true,
+            city = String(
+                mainObject.getJSONObject("location").getString("name")
+                    .toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8
+            ),
+            time = mainObject.getJSONObject("current").getString("last_updated"),
+            condition = mainObject.getJSONObject("current").getJSONObject("condition")
+                .getString("text"),
+            imageUrl = mainObject.getJSONObject("current").getJSONObject("condition")
+                .getString("icon"),
+            currentTemp = mainObject.getJSONObject("current").getString("temp_c").toFloat().toInt()
+                .toString(),
+            maxTemp = weatherItem.maxTemp,
+            minTemp = weatherItem.minTemp,
+            hours = weatherItem.hours,
+        )
+        model.liveDataCurrentSelection.value = item
+        loading(false)
     }
 
     companion object {
@@ -271,4 +291,10 @@ class CitiesFragment : Fragment(R.layout.fragment_cities) {
         super.onDestroy()
         binding = null
     }
+
+
+
+
+
+
 }

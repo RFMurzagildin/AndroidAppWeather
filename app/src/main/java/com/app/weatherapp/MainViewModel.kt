@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.app.weatherapp.models.WeatherModel
 
 class MainViewModel : ViewModel() {
-    val liveDataCurrent = MutableLiveData<WeatherModel>()
+    val liveDataCurrentCity = MutableLiveData<WeatherModel>()
+    val liveDataCurrentSelection = MutableLiveData<WeatherModel>()
     val liveDataList = MutableLiveData<List<WeatherModel>>()
-    val liveDataCitiesWeather = MutableLiveData<List<WeatherModel>>()
 }
